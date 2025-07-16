@@ -1,42 +1,31 @@
 import requests
-from bs4 import BeautifulSoup
 
-def scrape_product_info(url):
+SERPAPI_KEY = "8131d215f5e25047542f39e3a960352422921727f17d669193f763d85a9c9c9d"
+
+def scrape_product_info(asin):
     """
-    Scrape product name, price, and image from the URL.
-    Note: This example works with Amazon product pages.
+    Uses SerpApi to get Amazon product info by ASIN.
     """
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-                      " AppleWebKit/537.36 (KHTML, like Gecko)"
-                      " Chrome/58.0.3029.110 Safari/537.3"
+    params = {
+        "engine": "amazon_product",
+        "amazon_domain": "amazon.com",
+        "asin": asin,
+        "api_key": SERPAPI_KEY
     }
 
-    response = requests.get(url, headers=headers)
+    response = requests.get("https://serpapi.com/search", params=params)
+
     if response.status_code != 200:
-        raise Exception("Failed to load page")
+        raise Exception(f"SerpApi request failed: {response.status_code}")
 
-    soup = BeautifulSoup(response.content, 'html.parser')
+    data = response.json()
+    if "error" in data:
+        raise Exception(data["error"])
 
-    # Get product title
-    title_tag = soup.find(id="productTitle")
-    if not title_tag:
-        raise Exception("Could not find product title")
-    product_name = title_tag.get_text().strip()
+    title = data.get("title", "Unknown Product")
+    price_str = data.get("price", {}).get("raw", "$0.00")
+    price = float(price_str.replace("$", "").replace(",", ""))
+    image_url = data.get("images", [None])[0]
 
-    # Get price
-    price_tag = soup.find(id="priceblock_ourprice") or soup.find(id="priceblock_dealprice")
-    if not price_tag:
-        raise Exception("Could not find product price")
-    price_str = price_tag.get_text().strip().replace('$', '').replace(',', '')
-    price = float(price_str)
-
-    # Get image
-    img_tag = soup.find(id="landingImage") or soup.find("img", {"id": "imgBlkFront"})
-    if img_tag and img_tag.has_attr('src'):
-        image_url = img_tag['src']
-    else:
-        image_url = None
-
-    return product_name, price, image_url
+    return title, price, image_url
