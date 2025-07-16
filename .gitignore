@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables / virtual env
+.env
+venv/
+env/
+
+# Data files (price history) - usually big or auto-generated
+data/price_data.csv
+
+# IDE or editor folders
+.vscode/
+.idea/
