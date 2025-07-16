@@ -15,7 +15,7 @@ def search_amazon_products(keyword):
 
     response = requests.get("https://serpapi.com/search.json", params=params)
     if response.status_code != 200:
-        raise Exception(f"SerpApi search failed: {response.status_code}")
+        raise Exception(f"SerpApi search failed: {response.status_code} - {response.text}")
 
     data = response.json()
     results = data.get("organic_results", [])
