@@ -4,7 +4,7 @@ SERPAPI_KEY = "8131d215f5e25047542f39e3a960352422921727f17d669193f763d85a9c9c9d"
 
 def search_amazon_products(keyword):
     """
-    Use SerpApi to search Amazon by keyword and return product list
+    Use SerpApi to search Amazon by keyword and return product list.
     """
     params = {
         "engine": "amazon",
